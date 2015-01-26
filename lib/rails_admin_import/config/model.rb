@@ -18,6 +18,10 @@ module RailsAdminImport
       register_instance_option(:extra_fields) do
         []
       end
+
+      register_instance_option(:import_only_if_all_records_valid) do
+        false
+      end
     end
   end
 end

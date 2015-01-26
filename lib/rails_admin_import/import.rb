@@ -102,31 +102,41 @@ module RailsAdminImport
           end
    
           label_method = RailsAdminImport.config(self).label
-  
-          file.each do |row|
-            object = self.import_initialize(row, map, update)
-            object.import_belongs_to_data(associated_map, row, map)
-            object.import_many_data(associated_map, row, map)
-            object.before_import_save(row, map)
-  
-            object.import_files(row, map)
 
-            verb = object.new_record? ? "Create" : "Update"
-            if object.errors.empty?
-              if object.save
-                logger.info "#{Time.now.to_s}: #{verb}d: #{object.send(label_method)}"
-                results[:success] << "#{verb}d: #{object.send(label_method)}"
-                object.after_import_save(row, map)
+          ActiveRecord::Base.transaction do
+            file_has_invalid_record = false
+            file.each do |row|
+              object = self.import_initialize(row, map, update)
+              object.import_belongs_to_data(associated_map, row, map)
+              object.import_many_data(associated_map, row, map)
+              object.before_import_save(row, map)
+
+              object.import_files(row, map)
+
+              verb = object.new_record? ? "Create" : "Update"
+              if object.errors.empty?
+                if object.save
+                  logger.info "#{Time.now.to_s}: #{verb}d: #{object.send(label_method)}"
+                  results[:success] << "#{verb}d: #{object.send(label_method)}"
+                  object.after_import_save(row, map)
+                else
+                  logger.info "#{Time.now.to_s}: Failed to #{verb}: #{object.send(label_method)}. Errors: #{object.errors.full_messages.join(', ')}."
+                  results[:error] << "Failed to #{verb}: #{object.send(label_method)}. Errors: #{object.errors.full_messages.join(', ')}."
+                end
               else
-                logger.info "#{Time.now.to_s}: Failed to #{verb}: #{object.send(label_method)}. Errors: #{object.errors.full_messages.join(', ')}."
-                results[:error] << "Failed to #{verb}: #{object.send(label_method)}. Errors: #{object.errors.full_messages.join(', ')}."
+                file_has_invalid_record = true
+                logger.info "#{Time.now.to_s}: Errors before save: #{object.send(label_method)}. Errors: #{object.errors.full_messages.join(', ')}."
+                results[:error] << "Errors before save: #{object.send(label_method)}. Errors: #{object.errors.full_messages.join(', ')}."
               end
-            else
-              logger.info "#{Time.now.to_s}: Errors before save: #{object.send(label_method)}. Errors: #{object.errors.full_messages.join(', ')}."
-              results[:error] << "Errors before save: #{object.send(label_method)}. Errors: #{object.errors.full_messages.join(', ')}."
+            end
+
+            if file_has_invalid_record && RailsAdminImport.config(self).import_only_if_all_records_valid
+              logger.info '!!!Imported CSV file has invalid record. Rolled back all changes!!!'
+              results[:success] << "Do not worry. Rolled back imported records. Fix all records and try again!"
+              raise ActiveRecord::Rollback
             end
           end
-    
+
           results
         rescue Exception => e
           logger.info "#{Time.now.to_s}: Unknown exception in import: #{e.inspect}"

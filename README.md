@@ -31,9 +31,15 @@ Installation
             excluded_fields do
               [:field1, :field2, :field3]
             end
+
             label :name
+
             extra_fields do
               [:field3, :field4, :field5]
+            end
+
+            import_only_if_all_records_valid do
+              true
             end
           end
         end

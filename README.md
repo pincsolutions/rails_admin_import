@@ -41,6 +41,10 @@ Installation
             import_only_if_all_records_valid do
               true
             end
+
+            belongs_fields_mapping do
+              {'belong_field_name' => 'actual_belong_field'}
+            end
           end
         end
 

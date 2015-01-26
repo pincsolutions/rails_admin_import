@@ -109,8 +109,8 @@
     </div>
 
   </fieldset>
-  <% if @abstract_model.model.belongs_to_fields.any? -%>
-  <fieldset>
+  <% if @abstract_model.model.belongs_to_fields.any? %>
+  <fieldset class="<%= 'hide' if !RailsAdminImport.config(@abstract_model.model).belongs_fields_mapping.empty? %>">
     <legend>
       <i class="icon-chevron-down"></i>
       Related fields mapping
@@ -121,7 +121,7 @@
       <div class="controls">
         <select name="<%= field %>">
           <% field.to_s.classify.constantize.new.attributes.keys.each do |key| -%>
-          <option value="<%= key %>"><%= key %></option>
+            <option value="<%= key %>"<%= ' selected="selected"' if key == RailsAdminImport.config(@abstract_model.model).belongs_fields_mapping[field.to_s] %>><%= key %></option>
           <% end -%>
         </select>
       </div>

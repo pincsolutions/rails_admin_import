@@ -131,8 +131,7 @@ module RailsAdminImport
             end
 
             if file_has_invalid_record && RailsAdminImport.config(self).import_only_if_all_records_valid
-              logger.info '!!!Imported CSV file has invalid record. Rolled back all changes!!!'
-              results[:success] << "Do not worry. Rolled back imported records. Fix all records and try again!"
+              results[:success] << "0 records imported. Fix error records and try again"
               raise ActiveRecord::Rollback
             end
           end

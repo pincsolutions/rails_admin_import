@@ -31,9 +31,24 @@ Installation
             excluded_fields do
               [:field1, :field2, :field3]
             end
+
             label :name
+
             extra_fields do
               [:field3, :field4, :field5]
+            end
+
+            import_only_if_all_records_valid do
+              true
+            end
+
+            belongs_fields_mapping do
+              {'belong_field_name' => 'actual_belong_field'}
+            end
+
+            # Display update existing record by update lookup fields
+            allow_update_existing_record do
+              true
             end
           end
         end

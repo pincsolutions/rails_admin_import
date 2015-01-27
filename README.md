@@ -45,6 +45,11 @@ Installation
             belongs_fields_mapping do
               {'belong_field_name' => 'actual_belong_field'}
             end
+
+            # Display update existing record by update lookup fields
+            allow_update_existing_record do
+              true
+            end
           end
         end
 

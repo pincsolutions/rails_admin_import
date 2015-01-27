@@ -26,6 +26,10 @@ module RailsAdminImport
       register_instance_option(:belongs_fields_mapping) do
         {}
       end
+
+      register_instance_option(:allow_update_existing_record) do
+        true
+      end
     end
   end
 end

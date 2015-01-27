@@ -89,24 +89,26 @@
         <p class="help-block">Please limit upload file to <%= RailsAdminImport.config.line_item_limit %> line items.</p>
       </div>
     </div>
-    <div class="control-group">
-      <label class="control-label" data-original-title="Click to reverse selection" onclick="jQuery(this).siblings('.controls').find('input').click()" rel="tooltip">Update if exists</label>
-      <div class="controls">
-        <label class="checkbox">
-          <%= check_box_tag :update_if_exists %>
-        </label>
+    <% if RailsAdminImport.config(@abstract_model.model).allow_update_existing_record %>
+      <div class="control-group">
+        <label class="control-label" data-original-title="Click to reverse selection" onclick="jQuery(this).siblings('.controls').find('input').click()" rel="tooltip">Update if exists</label>
+        <div class="controls">
+          <label class="checkbox">
+            <%= check_box_tag :update_if_exists %>
+          </label>
+        </div>
       </div>
-    </div>
-    <div class="control-group">
-      <label class="control-label" data-original-title="Click to reverse selection" onclick="jQuery(this).siblings('.controls').find('input').click()" rel="tooltip">Update lookup field</label>
-      <div class="controls">
-        <select name="update_lookup">
-          <% @abstract_model.model.new.attributes.keys.each do |key| -%>
-          <option value="<%= key %>"><%= key %></option>
-          <% end -%>
-        </select>
+      <div class="control-group">
+        <label class="control-label" data-original-title="Click to reverse selection" onclick="jQuery(this).siblings('.controls').find('input').click()" rel="tooltip">Update lookup field</label>
+        <div class="controls">
+          <select name="update_lookup">
+            <% @abstract_model.model.new.attributes.keys.each do |key| -%>
+            <option value="<%= key %>"><%= key %></option>
+            <% end -%>
+          </select>
+        </div>
       </div>
-    </div>
+    <% end %>
 
   </fieldset>
   <% if @abstract_model.model.belongs_to_fields.any? %>

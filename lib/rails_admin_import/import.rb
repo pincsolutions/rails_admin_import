@@ -131,7 +131,8 @@ module RailsAdminImport
             end
 
             if file_has_invalid_record && RailsAdminImport.config(self).import_only_if_all_records_valid
-              results[:success] << "0 records imported. Please fix error records and try again"
+              results[:error] << "0 records imported. Please fix error records and try again"
+              results[:success] = []
               raise ActiveRecord::Rollback
             end
           end
